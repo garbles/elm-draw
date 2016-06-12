@@ -54,6 +54,7 @@ init =
       ]
     )
 
+
 -- UPDATE
 
 
@@ -82,7 +83,6 @@ update msg model =
         canvas = Canvas.setSize model.canvas size
       in
         ({ model | canvas = canvas }, Cmd.none)
-
 
 
 -- SUBSCRIPTIONS

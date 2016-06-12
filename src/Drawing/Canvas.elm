@@ -26,12 +26,6 @@ import Point exposing (Point)
 -- MODEL
 
 
-type alias PageSize =
-  { width : Int
-  , height : Int
-  }
-
-
 type alias Path =
   { points : List Point
   , color : Color
@@ -42,13 +36,13 @@ type alias Model =
   { isDragging : Bool
   , paths : List Path
   , currentColor : Color
-  , size : PageSize
+  , size : Window.Size
   }
 
 
 type alias Flags =
   { defaultColor : Color
-  , defaultSize : PageSize
+  , defaultSize : Window.Size
   }
 
 
@@ -132,7 +126,7 @@ onMouseDown =
     on "mousedown" (Json.Decode.map DragStart Mouse.position)
 
 
-toPoint : PageSize -> Mouse.Position -> Point
+toPoint : Window.Size -> Mouse.Position -> Point
 toPoint size pos =
   (toFloat (pos.x - size.width // 2), toFloat (size.height // 2 - pos.y))
 
