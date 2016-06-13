@@ -70,7 +70,7 @@ viewColor currentColor color =
       ("background-color", (toRgbString color)),
       ("width", "50px"),
       ("height", "50px"),
-      ("opacity", if currentColor == color then "1" else "0.5")
+      ("box-shadow", if currentColor == color then "inset 0px 0px 0px 3px rgba(255,255,255,0.5)" else "")
     ]
   in
     div [ style styles, onClick (SetColor color) ] []

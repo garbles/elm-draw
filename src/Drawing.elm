@@ -1,5 +1,6 @@
 import Html exposing (..)
 import Html.App as App
+import Html.Attributes exposing (style)
 import Color exposing (Color)
 import Task
 import Window
@@ -102,7 +103,7 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-  div []
+  div [ style [("cursor", "pointer")] ]
   [
     (App.map UpdateCanvas (Canvas.view model.canvas)),
     (App.map UpdateToolbar (Toolbar.view model.toolbar))
