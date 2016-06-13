@@ -6,6 +6,7 @@ module ToolbarHandle exposing
   , subscriptions
   , view
   , getPosition
+  , isOpen
   )
 
 import Html exposing (..)
@@ -23,6 +24,7 @@ import Point exposing (Point)
 
 type alias Model =
   { isDragging : Bool
+  , isOpen : Bool
   , position : Point
   , startOffset : Point
   }
@@ -33,7 +35,7 @@ type alias Flags = {}
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
-  (Model False (10, 10) (0, 0), Cmd.none)
+  (Model False True (10, 10) (0, 0), Cmd.none)
 
 
 -- UPDATE
@@ -43,6 +45,7 @@ type Msg =
   DragStart Mouse.Position
   | DragAt Mouse.Position
   | DragEnd Mouse.Position
+  | ToggleOpen
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -57,6 +60,8 @@ update msg model =
       ({ model | position = deltaPoints (toPoint position) model.startOffset }, Cmd.none)
     DragEnd position ->
       ({ model | isDragging = False }, Cmd.none)
+    ToggleOpen ->
+      ({ model | isOpen = not model.isOpen }, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -76,13 +81,24 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
-    styles = [
+    wrapperStyle = [
+      ("position", "relative"),
       ("width", "100%"),
       ("height", "20px"),
       ("background-color", "#ccc")
     ]
+
+    buttonStyle = [
+      ("position", "absolute"),
+      ("right", "0"),
+      ("top", "0"),
+      ("height", "20px")
+    ]
   in
-    div [ style styles, onMouseDown ] []
+    div [] [
+      div [ style wrapperStyle, onMouseDown ] [],
+      button [ style buttonStyle, onClick ToggleOpen ] []
+    ]
 
 
 -- UTILS
@@ -108,3 +124,6 @@ deltaPoints topLeft click =
 
 getPosition : Model -> Point
 getPosition = .position
+
+isOpen : Model -> Bool
+isOpen = .isOpen

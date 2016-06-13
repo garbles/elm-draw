@@ -23,9 +23,8 @@ import ToolbarHandle
 
 
 type alias Model =
-  {
-    colorPicker : ColorPicker.Model,
-    handle : ToolbarHandle.Model
+  { colorPicker : ColorPicker.Model
+  , handle : ToolbarHandle.Model
   }
 
 
@@ -93,13 +92,22 @@ view model =
     styles = [
       ("position", "absolute"),
       ("top", (toString top) ++ "px"),
-      ("left", (toString left) ++ "px")
+      ("left", (toString left) ++ "px"),
+      ("width", "400px")
     ]
   in
     div [ style styles ] [
       App.map UpdateToolbarHandle (ToolbarHandle.view model.handle),
-      App.map UpdateColorPicker (ColorPicker.view model.colorPicker)
+      viewBody model
     ]
+
+
+viewBody : Model -> Html Msg
+viewBody model =
+  if (ToolbarHandle.isOpen model.handle) then
+    App.map UpdateColorPicker (ColorPicker.view model.colorPicker)
+  else
+    div [] []
 
 
 -- UTILS
