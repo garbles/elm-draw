@@ -1,0 +1,26 @@
+{
+  "name": "drawing",
+  "version": "0.0.0",
+  "description": "Learning Elm :neckbeard:",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --hot --inline --port 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garbles/elm-draw.git"
+  },
+  "author": "Gabe Scholz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/garbles/elm-draw/issues"
+  },
+  "homepage": "https://github.com/garbles/elm-draw#readme",
+  "dependencies": {
+    "elm-hot-loader": "0.3.3",
+    "elm-webpack-loader": "3.0.3",
+    "html-webpack-plugin": "2.21.0",
+    "webpack": "1.13.1",
+    "webpack-dev-server": "1.14.1"
+  }
+}

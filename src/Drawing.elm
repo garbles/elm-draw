@@ -1,3 +1,5 @@
+module Drawing exposing (main)
+
 import Html exposing (..)
 import Html.App as App
 import Html.Attributes exposing (style)
