@@ -81,23 +81,24 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
-    wrapperStyle = [
+    wrapperStyle = style [
       ("position", "relative"),
       ("width", "100%"),
       ("height", "20px"),
       ("background-color", "#ccc")
     ]
 
-    buttonStyle = [
+    toggleStyle = style [
       ("position", "absolute"),
       ("right", "0"),
       ("top", "0"),
+      ("width", "20px"),
       ("height", "20px")
     ]
   in
     div [] [
-      div [ style wrapperStyle, onMouseDown ] [],
-      button [ style buttonStyle, onClick ToggleOpen ] []
+      div [ wrapperStyle, onMouseDown ] [],
+      div [ toggleStyle, onClick ToggleOpen ] [ text (if model.isOpen then "X" else "O") ]
     ]
 
 
@@ -124,6 +125,7 @@ deltaPoints topLeft click =
 
 getPosition : Model -> Point
 getPosition = .position
+
 
 isOpen : Model -> Bool
 isOpen = .isOpen

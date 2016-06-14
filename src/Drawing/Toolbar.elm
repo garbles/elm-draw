@@ -89,25 +89,27 @@ view : Model -> Html Msg
 view model =
   let
     (left, top) = ToolbarHandle.getPosition model.handle
-    styles = [
+    wrapperStyle = style [
       ("position", "absolute"),
       ("top", (toString top) ++ "px"),
       ("left", (toString left) ++ "px"),
       ("width", "400px")
     ]
   in
-    div [ style styles ] [
-      App.map UpdateToolbarHandle (ToolbarHandle.view model.handle),
-      viewBody model
-    ]
+    div [ wrapperStyle ]
+      ([App.map UpdateToolbarHandle (ToolbarHandle.view model.handle)] ++ (viewBody model))
 
 
-viewBody : Model -> Html Msg
+viewBody : Model -> List (Html Msg)
 viewBody model =
   if (ToolbarHandle.isOpen model.handle) then
-    App.map UpdateColorPicker (ColorPicker.view model.colorPicker)
+    [
+      App.map UpdateColorPicker (ColorPicker.view model.colorPicker)
+    ]
   else
-    div [] []
+    [
+      div [] []
+    ]
 
 
 -- UTILS

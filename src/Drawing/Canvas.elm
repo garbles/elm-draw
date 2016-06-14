@@ -19,17 +19,13 @@ import Json.Decode
 import Mouse
 import Window
 
-
 import Point exposing (Point)
 
 
 -- MODEL
 
 
-type alias Path =
-  { points : List Point
-  , color : Color
-  }
+type Path = PencilPath (List Point) Color | CirclePath (List Point) Color
 
 
 type alias Model =
@@ -64,19 +60,32 @@ update msg model =
   case msg of
     DragStart position ->
       let
-        newPath = Path [toPoint model.size position] model.currentColor
-        paths = [newPath] ++ model.paths
+        paths = [newPath model position] ++ model.paths
       in
         ({ model | paths = paths, isDragging = True }, Cmd.none)
     DragAt position ->
       let
         path = headPathList model.paths
-        nextPath = { path | points = (path.points ++ [toPoint model.size position]) }
+        nextPath = updatePath model position path
         paths = [nextPath] ++ (tailPathList model.paths)
       in
         ({ model | paths = paths }, Cmd.none)
     DragEnd position ->
       ({ model | isDragging = False }, Cmd.none)
+
+
+newPath : Model -> Mouse.Position -> Path
+newPath model position =
+  PencilPath [toPoint model.size position] model.currentColor
+
+
+updatePath : Model -> Mouse.Position -> Path -> Path
+updatePath model position path =
+  case path of
+    PencilPath points color ->
+      PencilPath (points ++ [toPoint model.size position]) color
+    CirclePath points color ->
+      path
 
 
 -- SUBSCRIPTIONS
@@ -111,11 +120,20 @@ viewPaths model =
 
 viewPath : Path -> Collage.Form
 viewPath path =
-  let
-    defaultLine = Collage.defaultLine
-    lineStyle = { defaultLine | color = path.color, width = 3 }
-  in
-    (Collage.traced lineStyle (Collage.path path.points))
+  case path of
+    PencilPath points color ->
+      let
+        defaultLine = Collage.defaultLine
+        lineStyle = { defaultLine | color = color, width = 3 }
+      in
+        (Collage.traced lineStyle (Collage.path points))
+    CirclePath points color ->
+      let
+        defaultLine = Collage.defaultLine
+        lineStyle = { defaultLine | color = color, width = 3 }
+      in
+        (Collage.traced lineStyle (Collage.path points))
+
 
 
 -- UTILS
@@ -124,6 +142,14 @@ viewPath path =
 onMouseDown : Attribute Msg
 onMouseDown =
     on "mousedown" (Json.Decode.map DragStart Mouse.position)
+
+
+setCurrentColor : Model -> Color -> Model
+setCurrentColor model color = { model | currentColor = color }
+
+
+setSize : Model -> Window.Size -> Model
+setSize model size = { model | size = size }
 
 
 toPoint : Window.Size -> Mouse.Position -> Point
@@ -137,7 +163,7 @@ headPathList list =
     Just result ->
       result
     Nothing ->
-      Path [] black
+      PencilPath [] black
 
 
 tailPathList : List Path -> List Path
@@ -147,11 +173,3 @@ tailPathList list =
       result
     Nothing ->
       []
-
-
-setCurrentColor : Model -> Color -> Model
-setCurrentColor model color = { model | currentColor = color }
-
-
-setSize : Model -> Window.Size -> Model
-setSize model size = { model | size = size }

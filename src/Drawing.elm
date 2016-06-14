@@ -103,9 +103,15 @@ subscriptions model =
 -- VIEW
 
 
+wrapperStyle = style [
+    ("cursor", "pointer"),
+    ("user-select", "none")
+  ]
+
+
 view : Model -> Html Msg
 view model =
-  div [ style [("cursor", "pointer")] ]
+  div [ wrapperStyle ]
   [
     (App.map UpdateCanvas (Canvas.view model.canvas)),
     (App.map UpdateToolbar (Toolbar.view model.toolbar))
