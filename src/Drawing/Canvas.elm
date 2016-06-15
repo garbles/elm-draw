@@ -6,6 +6,7 @@ module Canvas exposing
   , subscriptions
   , view
   , setCurrentColor
+  , setCurrentTool
   , setSize
   )
 
@@ -20,17 +21,19 @@ import Mouse
 import Window
 
 import Point exposing (Point)
+import Tool exposing (Tool(..))
 
 
 -- MODEL
 
 
-type Path = PencilPath (List Point) Color | CirclePath (List Point) Color
+type Path = PencilPath (List Point) Color | CirclePath Point Float Color | LinePath (List Point) Color
 
 
 type alias Model =
   { isDragging : Bool
   , paths : List Path
+  , currentTool : Tool
   , currentColor : Color
   , size : Window.Size
   }
@@ -39,11 +42,12 @@ type alias Model =
 type alias Flags =
   { defaultColor : Color
   , defaultSize : Window.Size
+  , defaultTool : Tool
   }
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model False [] flags.defaultColor flags.defaultSize, Cmd.none)
+init flags = (Model False [] flags.defaultTool flags.defaultColor flags.defaultSize, Cmd.none)
 
 
 -- UPDATE
@@ -65,9 +69,10 @@ update msg model =
         ({ model | paths = paths, isDragging = True }, Cmd.none)
     DragAt position ->
       let
-        path = headPathList model.paths
+        defaultPath = PencilPath [] black
+        path = headList defaultPath model.paths
         nextPath = updatePath model position path
-        paths = [nextPath] ++ (tailPathList model.paths)
+        paths = [nextPath] ++ (tailList model.paths)
       in
         ({ model | paths = paths }, Cmd.none)
     DragEnd position ->
@@ -76,7 +81,19 @@ update msg model =
 
 newPath : Model -> Mouse.Position -> Path
 newPath model position =
-  PencilPath [toPoint model.size position] model.currentColor
+  case model.currentTool of
+    Pencil ->
+      PencilPath [toPoint model.size position] model.currentColor
+    Line ->
+      let
+        point = (toPoint model.size position)
+      in
+        LinePath [point, point] model.currentColor
+    Circle ->
+      let
+        point = (toPoint model.size position)
+      in
+        CirclePath point 0.0 model.currentColor
 
 
 updatePath : Model -> Mouse.Position -> Path -> Path
@@ -84,8 +101,14 @@ updatePath model position path =
   case path of
     PencilPath points color ->
       PencilPath (points ++ [toPoint model.size position]) color
-    CirclePath points color ->
-      path
+    LinePath points color ->
+      LinePath [(headList (0, 0) points), (toPoint model.size position)] color
+    CirclePath point _ color ->
+      let
+        positionPoint = toPoint model.size position
+        radius = toDistance point positionPoint
+      in
+        CirclePath point radius color
 
 
 -- SUBSCRIPTIONS
@@ -127,13 +150,20 @@ viewPath path =
         lineStyle = { defaultLine | color = color, width = 3 }
       in
         (Collage.traced lineStyle (Collage.path points))
-    CirclePath points color ->
+    LinePath points color ->
       let
         defaultLine = Collage.defaultLine
         lineStyle = { defaultLine | color = color, width = 3 }
       in
         (Collage.traced lineStyle (Collage.path points))
-
+    CirclePath point radius color ->
+      let
+        defaultLine = Collage.defaultLine
+        lineStyle = { defaultLine | color = color, width = 3 }
+      in
+        Collage.circle radius
+          |> (Collage.outlined lineStyle)
+          |> (Collage.move point)
 
 
 -- UTILS
@@ -144,8 +174,12 @@ onMouseDown =
     on "mousedown" (Json.Decode.map DragStart Mouse.position)
 
 
-setCurrentColor : Model -> Color -> Model
-setCurrentColor model color = { model | currentColor = color }
+setCurrentColor : Color -> Model -> Model
+setCurrentColor color model = { model | currentColor = color }
+
+
+setCurrentTool : Tool -> Model -> Model
+setCurrentTool tool model = { model | currentTool = tool }
 
 
 setSize : Model -> Window.Size -> Model
@@ -157,17 +191,26 @@ toPoint size pos =
   (toFloat (pos.x - size.width // 2), toFloat (size.height // 2 - pos.y))
 
 
-headPathList : List Path -> Path
-headPathList list =
+toDistance : Point -> Point -> Float
+toDistance p1 p2 =
+  let
+    (x1, y1) = p1
+    (x2, y2) = p2
+  in
+    sqrt <| (x1 - x2)^2 + (y1 - y2)^2
+
+
+headList : a -> List a -> a
+headList default list =
   case List.head list of
     Just result ->
       result
     Nothing ->
-      PencilPath [] black
+      default
 
 
-tailPathList : List Path -> List Path
-tailPathList list =
+tailList : List a -> List a
+tailList list =
   case List.tail list of
     Just result ->
       result

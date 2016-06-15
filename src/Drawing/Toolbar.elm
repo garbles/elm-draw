@@ -6,6 +6,7 @@ module Toolbar exposing
   , subscriptions
   , view
   , getCurrentColor
+  , getCurrentTool
   )
 
 
@@ -17,6 +18,8 @@ import Color exposing (Color, black)
 
 import ColorPicker
 import ToolbarHandle
+import ToolPicker
+import Tool exposing (Tool(..))
 
 
 -- MODEL
@@ -25,26 +28,32 @@ import ToolbarHandle
 type alias Model =
   { colorPicker : ColorPicker.Model
   , handle : ToolbarHandle.Model
+  , toolPicker : ToolPicker.Model
   }
 
 
 type alias Flags =
   { defaultColors : List Color
   , defaultColor : Color
+  , defaultTools : List Tool
+  , defaultTool : Tool
   }
 
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    (colorPicker, cmd) = ColorPicker.init flags
+    { defaultColor, defaultColors, defaultTool, defaultTools } = flags
+    (colorPicker, cmd) = ColorPicker.init { defaultColors = defaultColors, defaultColor = defaultColor }
     (handle, cmd2) = ToolbarHandle.init {}
+    (toolPicker, cmd3) = ToolPicker.init { defaultTool = defaultTool, defaultTools = defaultTools }
   in
     (
-      Model colorPicker handle,
+      Model colorPicker handle toolPicker,
       Cmd.batch [
         Cmd.map UpdateColorPicker cmd,
-        Cmd.map UpdateToolbarHandle cmd2
+        Cmd.map UpdateToolbarHandle cmd2,
+        Cmd.map UpdateToolPicker cmd3
       ]
     )
 
@@ -55,7 +64,7 @@ init flags =
 type Msg =
   UpdateColorPicker ColorPicker.Msg
   | UpdateToolbarHandle ToolbarHandle.Msg
-
+  | UpdateToolPicker ToolPicker.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -70,6 +79,11 @@ update msg model =
         (handle, cmd) = (ToolbarHandle.update msg model.handle)
       in
         ({ model | handle = handle }, Cmd.map UpdateToolbarHandle cmd)
+    UpdateToolPicker msg ->
+      let
+        (toolPicker, cmd) = (ToolPicker.update msg model.toolPicker)
+      in
+        ({ model | toolPicker = toolPicker }, Cmd.map UpdateToolPicker cmd)
 
 
 -- SUBSCRIPTIONS
@@ -79,8 +93,10 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch [
     Sub.map UpdateColorPicker (ColorPicker.subscriptions model.colorPicker),
-    Sub.map UpdateToolbarHandle (ToolbarHandle.subscriptions model.handle)
+    Sub.map UpdateToolbarHandle (ToolbarHandle.subscriptions model.handle),
+    Sub.map UpdateToolPicker (ToolPicker.subscriptions model.toolPicker)
   ]
+
 
 -- VIEW
 
@@ -104,7 +120,8 @@ viewBody : Model -> List (Html Msg)
 viewBody model =
   if (ToolbarHandle.isOpen model.handle) then
     [
-      App.map UpdateColorPicker (ColorPicker.view model.colorPicker)
+      App.map UpdateColorPicker (ColorPicker.view model.colorPicker),
+      App.map UpdateToolPicker (ToolPicker.view model.toolPicker)
     ]
   else
     [
@@ -118,3 +135,7 @@ viewBody model =
 getCurrentColor : Model -> Color
 getCurrentColor model =
   ColorPicker.getCurrentColor model.colorPicker
+
+getCurrentTool : Model -> Tool
+getCurrentTool model =
+  ToolPicker.getCurrentTool model.toolPicker

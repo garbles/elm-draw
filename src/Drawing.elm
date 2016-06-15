@@ -9,6 +9,7 @@ import Window
 
 import Canvas
 import Toolbar
+import Tool exposing (Tool(..))
 
 defaultColors = [
     Color.black,
@@ -22,6 +23,8 @@ defaultColors = [
   ]
 defaultSize = { width = 1000, height = 500 }
 defaultColor = Color.black
+defaultTool = Pencil
+defaultTools = Tool.list
 
 main =
   App.program
@@ -45,8 +48,18 @@ type alias Model =
 init : (Model, Cmd Msg)
 init =
   let
-    (canvas, cmd) = Canvas.init { defaultSize = defaultSize, defaultColor = defaultColor }
-    (toolbar, cmd2) = Toolbar.init { defaultColors = defaultColors, defaultColor = defaultColor }
+    (canvas, cmd) = Canvas.init
+      { defaultSize = defaultSize
+      , defaultColor = defaultColor
+      , defaultTool = defaultTool
+      }
+
+    (toolbar, cmd2) = Toolbar.init
+      { defaultColors = defaultColors
+      , defaultColor = defaultColor
+      , defaultTools = defaultTools
+      , defaultTool = defaultTool
+      }
   in
     (
       Model canvas toolbar,
@@ -78,7 +91,9 @@ update msg model =
     UpdateToolbar msg ->
       let
         (toolbar, cmd) = Toolbar.update msg model.toolbar
-        canvas = Canvas.setCurrentColor model.canvas (Toolbar.getCurrentColor toolbar)
+        canvas = model.canvas
+          |> Canvas.setCurrentColor (Toolbar.getCurrentColor toolbar)
+          |> Canvas.setCurrentTool (Toolbar.getCurrentTool toolbar)
       in
         ({ model | toolbar = toolbar, canvas = canvas }, Cmd.map UpdateToolbar cmd)
     GetWindowSize size ->
