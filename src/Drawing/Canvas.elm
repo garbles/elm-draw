@@ -27,7 +27,7 @@ import Tool exposing (Tool(..))
 -- MODEL
 
 
-type Path = PencilPath (List Point) Color | CirclePath Point Float Color | LinePath (List Point) Color
+type Path = PencilPath (List Point) Color | CirclePath Point Float Color | LinePath Point Point Color | RectanglePath Point Point Color
 
 
 type alias Model =
@@ -88,12 +88,17 @@ newPath model position =
       let
         point = (toPoint model.size position)
       in
-        LinePath [point, point] model.currentColor
+        LinePath point point model.currentColor
     Circle ->
       let
         point = (toPoint model.size position)
       in
         CirclePath point 0.0 model.currentColor
+    Rectangle ->
+      let
+        point = (toPoint model.size position)
+      in
+        RectanglePath point point model.currentColor
 
 
 updatePath : Model -> Mouse.Position -> Path -> Path
@@ -101,15 +106,22 @@ updatePath model position path =
   case path of
     PencilPath points color ->
       PencilPath (points ++ [toPoint model.size position]) color
-    LinePath points color ->
-      LinePath [(headList (0, 0) points), (toPoint model.size position)] color
+    LinePath origin _ color ->
+      let
+        point = (toPoint model.size position)
+      in
+        LinePath origin point color
     CirclePath point _ color ->
       let
         positionPoint = toPoint model.size position
         radius = toDistance point positionPoint
       in
         CirclePath point radius color
-
+    RectanglePath origin _ color ->
+      let
+        point = (toPoint model.size position)
+      in
+        RectanglePath origin point color
 
 -- SUBSCRIPTIONS
 
@@ -150,12 +162,12 @@ viewPath path =
         lineStyle = { defaultLine | color = color, width = 3 }
       in
         (Collage.traced lineStyle (Collage.path points))
-    LinePath points color ->
+    LinePath origin point color ->
       let
         defaultLine = Collage.defaultLine
         lineStyle = { defaultLine | color = color, width = 3 }
       in
-        (Collage.traced lineStyle (Collage.path points))
+        (Collage.traced lineStyle (Collage.path [origin, point]))
     CirclePath point radius color ->
       let
         defaultLine = Collage.defaultLine
@@ -164,6 +176,16 @@ viewPath path =
         Collage.circle radius
           |> (Collage.outlined lineStyle)
           |> (Collage.move point)
+    RectanglePath origin point color ->
+      let
+        (x1, y1) = origin
+        (x2, y2) = point
+        defaultLine = Collage.defaultLine
+        lineStyle = { defaultLine | color = color, width = 3 }
+      in
+        Collage.rect ((x2 - x1) * 2) ((y2 - y1) * 2)
+          |> (Collage.outlined lineStyle)
+          |> (Collage.move origin)
 
 
 -- UTILS

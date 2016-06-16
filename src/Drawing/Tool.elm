@@ -3,6 +3,6 @@ module Tool exposing
   , list
   )
 
-type Tool = Pencil | Circle | Line
+type Tool = Pencil | Circle | Line | Rectangle
 
-list = [ Pencil, Circle, Line ]
+list = [ Pencil, Circle, Line, Rectangle ]
