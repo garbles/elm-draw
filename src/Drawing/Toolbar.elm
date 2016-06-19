@@ -33,8 +33,7 @@ type alias Model =
 
 
 type alias Flags =
-  { defaultColors : List Color
-  , defaultColor : Color
+  { defaultColor : Color
   , defaultTools : List Tool
   , defaultTool : Tool
   }
@@ -43,8 +42,8 @@ type alias Flags =
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    { defaultColor, defaultColors, defaultTool, defaultTools } = flags
-    (colorPicker, cmd) = ColorPicker.init { defaultColors = defaultColors, defaultColor = defaultColor }
+    { defaultColor, defaultTool, defaultTools } = flags
+    (colorPicker, cmd) = ColorPicker.init { defaultColor = defaultColor }
     (handle, cmd2) = ToolbarHandle.init {}
     (toolPicker, cmd3) = ToolPicker.init { defaultTool = defaultTool, defaultTools = defaultTools }
   in

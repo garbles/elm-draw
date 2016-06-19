@@ -14,24 +14,25 @@ import Html.Events exposing (..)
 import Color exposing (Color)
 
 
+import ColorUtils exposing (hexToColor, colorToHex)
+
+
 -- MODEL
 
 
 type alias Model =
-  { color : Color,
-    colors : List Color
+  { color : Color
   }
 
 
 type alias Flags =
   { defaultColor : Color
-  , defaultColors : List Color
   }
 
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
-  (Model flags.defaultColor flags.defaultColors, Cmd.none)
+  (Model flags.defaultColor, Cmd.none)
 
 
 -- UPDATE
@@ -59,32 +60,29 @@ subscriptions model = Sub.none
 
 view : Model -> Html Msg
 view model =
-  div [] (List.map (viewColor model.color) model.colors)
+  div [] [viewColor model.color]
 
 
-viewColor : Color -> Color -> Html Msg
-viewColor currentColor color =
+viewColor : Color -> Html Msg
+viewColor color =
   let
-    styles = [
-      ("display", "inline-block"),
-      ("background-color", (toRgbString color)),
-      ("width", "50px"),
-      ("height", "50px"),
-      ("box-shadow", if currentColor == color then "inset 0px 0px 0px 8px rgba(255,255,255,0.3)" else "")
-    ]
+    inputStyle = style [
+        ("border", "none"),
+        ("width", "20px"),
+        ("background", "transparent"),
+        ("padding", "0"),
+        ("margin", "0"),
+        ("outline", "none")
+      ]
   in
-    div [ style styles, onClick (SetColor color) ] []
+    input [ type' "color", inputStyle, value (colorToHex color), onChangeColor ] []
 
 
 -- UTILS
 
 
-toRgbString : Color -> String
-toRgbString color =
-  let
-      rgb = Color.toRgb color
-  in
-     "rgb(" ++ toString rgb.red ++ "," ++ toString rgb.green ++ "," ++ toString rgb.blue ++ ")"
+onChangeColor : Attribute Msg
+onChangeColor = onInput (hexToColor >> SetColor)
 
 
 getCurrentColor : Model -> Color

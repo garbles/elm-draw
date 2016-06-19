@@ -9,21 +9,11 @@ import Window
 
 import Canvas
 import Toolbar
-import Tool exposing (Tool(..))
+import Tool exposing (Tool)
 
-defaultColors = [
-    Color.black,
-    Color.red,
-    Color.orange,
-    Color.yellow,
-    Color.green,
-    Color.blue,
-    Color.purple,
-    Color.brown
-  ]
 defaultSize = { width = 1000, height = 500 }
 defaultColor = Color.black
-defaultTool = Pencil
+defaultTool = Tool.pencil
 defaultTools = Tool.list
 
 main =
@@ -55,8 +45,7 @@ init =
       }
 
     (toolbar, cmd2) = Toolbar.init
-      { defaultColors = defaultColors
-      , defaultColor = defaultColor
+      { defaultColor = defaultColor
       , defaultTools = defaultTools
       , defaultTool = defaultTool
       }

@@ -13,7 +13,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Color exposing (Color)
-import Json.Decode
+import Json.Decode as Decode
 import Mouse
 
 import Point exposing (Point)
@@ -107,7 +107,7 @@ view model =
 
 onMouseDown : Attribute Msg
 onMouseDown =
-    on "mousedown" (Json.Decode.map DragStart Mouse.position)
+    on "mousedown" (Decode.map DragStart Mouse.position)
 
 
 toPoint : Mouse.Position -> Point

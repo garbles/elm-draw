@@ -11,7 +11,7 @@ module ToolPicker exposing
 import Html exposing (..)
 import Html.Events exposing (..)
 
-import Tool exposing (Tool(..))
+import Tool exposing (Tool)
 
 
 -- MODEL
