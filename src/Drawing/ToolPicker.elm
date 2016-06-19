@@ -23,12 +23,12 @@ type alias Model =
   }
 
 type alias Flags =
-  { defaultTool : Tool
-  , defaultTools : List Tool
+  { tool : Tool
+  , tools : List Tool
   }
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model flags.defaultTool flags.defaultTools, Cmd.none)
+init flags = (Model flags.tool flags.tools, Cmd.none)
 
 
 -- UPDATE

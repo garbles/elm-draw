@@ -11,10 +11,12 @@ import Canvas
 import Toolbar
 import Tool exposing (Tool)
 
+
 defaultSize = { width = 1000, height = 500 }
 defaultColor = Color.black
 defaultTool = Tool.pencil
 defaultTools = Tool.list
+
 
 main =
   App.program
@@ -39,15 +41,15 @@ init : (Model, Cmd Msg)
 init =
   let
     (canvas, cmd) = Canvas.init
-      { defaultSize = defaultSize
-      , defaultColor = defaultColor
-      , defaultTool = defaultTool
+      { size = defaultSize
+      , color = defaultColor
+      , tool = defaultTool
       }
 
     (toolbar, cmd2) = Toolbar.init
-      { defaultColor = defaultColor
-      , defaultTools = defaultTools
-      , defaultTool = defaultTool
+      { color = defaultColor
+      , tools = defaultTools
+      , tool = defaultTool
       }
   in
     (

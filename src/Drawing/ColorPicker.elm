@@ -26,13 +26,13 @@ type alias Model =
 
 
 type alias Flags =
-  { defaultColor : Color
+  { color : Color
   }
 
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
-  (Model flags.defaultColor, Cmd.none)
+  (Model flags.color, Cmd.none)
 
 
 -- UPDATE

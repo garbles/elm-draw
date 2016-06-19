@@ -38,14 +38,14 @@ type alias Model =
 
 
 type alias Flags =
-  { defaultColor : Color
-  , defaultSize : Window.Size
-  , defaultTool : Tool
+  { color : Color
+  , size : Window.Size
+  , tool : Tool
   }
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model False [] flags.defaultTool flags.defaultColor flags.defaultSize, Cmd.none)
+init flags = (Model False [] flags.tool flags.color flags.size, Cmd.none)
 
 
 -- UPDATE
