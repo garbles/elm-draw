@@ -70,12 +70,7 @@ inputStyle = style [
 
 view : Model -> Html Msg
 view model =
-  div [] [viewColor model.color]
-
-
-viewColor : Color -> Html Msg
-viewColor color =
-  input [ type' "color", inputStyle, value (colorToHex color), onChangeColor ] []
+  input [ type' "color", inputStyle, value (colorToHex model.color), onChangeColor ] []
 
 
 -- UTILS

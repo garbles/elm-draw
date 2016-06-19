@@ -6,6 +6,7 @@ import Html.Attributes exposing (style)
 import Color exposing (Color)
 import Task
 import Window
+import Random
 
 import Canvas
 import Toolbar
@@ -14,6 +15,7 @@ import Tool exposing (Tool)
 
 defaultSize = { width = 1000, height = 500 }
 defaultColor = Color.black
+defaultFill = Color.rgba 0 0 0 0
 defaultTool = Tool.pencil
 defaultTools = Tool.list
 
@@ -43,11 +45,13 @@ init =
     (canvas, cmd) = Canvas.init
       { size = defaultSize
       , color = defaultColor
+      , fill = defaultFill
       , tool = defaultTool
       }
 
     (toolbar, cmd2) = Toolbar.init
       { color = defaultColor
+      , fill = defaultFill
       , tools = defaultTools
       , tool = defaultTool
       }
@@ -84,6 +88,7 @@ update msg model =
         (toolbar, cmd) = Toolbar.update msg model.toolbar
         canvas = model.canvas
           |> Canvas.setCurrentColor (Toolbar.getCurrentColor toolbar)
+          |> Canvas.setCurrentFill (Toolbar.getCurrentFill toolbar)
           |> Canvas.setCurrentTool (Toolbar.getCurrentTool toolbar)
       in
         ({ model | toolbar = toolbar, canvas = canvas }, Cmd.map UpdateToolbar cmd)

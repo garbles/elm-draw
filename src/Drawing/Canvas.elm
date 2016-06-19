@@ -6,6 +6,7 @@ module Canvas exposing
   , subscriptions
   , view
   , setCurrentColor
+  , setCurrentFill
   , setCurrentTool
   , setSize
   )
@@ -33,19 +34,21 @@ type alias Model =
   , paths : List Path
   , currentTool : Tool
   , currentColor : Color
+  , currentFill : Color
   , size : Window.Size
   }
 
 
 type alias Flags =
   { color : Color
+  , fill : Color
   , size : Window.Size
   , tool : Tool
   }
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model False [] flags.tool flags.color flags.size, Cmd.none)
+init flags = (Model False [] flags.tool flags.color flags.fill flags.size, Cmd.none)
 
 
 -- UPDATE
@@ -64,8 +67,9 @@ update msg model =
       let
         point = toPoint model.size position
         color = model.currentColor
+        fill = model.currentFill
         tool = model.currentTool
-        path = Tool.newPath tool point color
+        path = Tool.newPath tool point color fill
         paths = [path] ++ model.paths
       in
         ({ model | paths = paths, isDragging = True }, Cmd.none)
@@ -120,6 +124,10 @@ onMouseDown =
 
 setCurrentColor : Color -> Model -> Model
 setCurrentColor color model = { model | currentColor = color }
+
+
+setCurrentFill : Color -> Model -> Model
+setCurrentFill color model = { model | currentFill = color }
 
 
 setCurrentTool : Tool -> Model -> Model

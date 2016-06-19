@@ -6,6 +6,7 @@ module Toolbar exposing
   , subscriptions
   , view
   , getCurrentColor
+  , getCurrentFill
   , getCurrentTool
   )
 
@@ -27,6 +28,7 @@ import Tool exposing (Tool(..))
 
 type alias Model =
   { colorPicker : ColorPicker.Model
+  , fillPicker : ColorPicker.Model
   , handle : ToolbarHandle.Model
   , toolPicker : ToolPicker.Model
   }
@@ -34,6 +36,7 @@ type alias Model =
 
 type alias Flags =
   { color : Color
+  , fill : Color
   , tools : List Tool
   , tool : Tool
   }
@@ -42,17 +45,19 @@ type alias Flags =
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    { color, tool, tools } = flags
+    { color, fill, tool, tools } = flags
     (colorPicker, cmd) = ColorPicker.init { color = color }
-    (handle, cmd2) = ToolbarHandle.init {}
-    (toolPicker, cmd3) = ToolPicker.init { tool = tool, tools = tools }
+    (fillPicker, cmd2) = ColorPicker.init { color = fill }
+    (handle, cmd3) = ToolbarHandle.init {}
+    (toolPicker, cmd4) = ToolPicker.init { tool = tool, tools = tools }
   in
     (
-      Model colorPicker handle toolPicker,
+      Model colorPicker fillPicker handle toolPicker,
       Cmd.batch [
         Cmd.map UpdateColorPicker cmd,
-        Cmd.map UpdateToolbarHandle cmd2,
-        Cmd.map UpdateToolPicker cmd3
+        Cmd.map UpdateFillPicker cmd2,
+        Cmd.map UpdateToolbarHandle cmd3,
+        Cmd.map UpdateToolPicker cmd4
       ]
     )
 
@@ -62,6 +67,7 @@ init flags =
 
 type Msg =
   UpdateColorPicker ColorPicker.Msg
+  | UpdateFillPicker ColorPicker.Msg
   | UpdateToolbarHandle ToolbarHandle.Msg
   | UpdateToolPicker ToolPicker.Msg
 
@@ -73,6 +79,11 @@ update msg model =
         (colorPicker, cmd) = (ColorPicker.update msg model.colorPicker)
       in
         ({ model | colorPicker = colorPicker }, Cmd.map UpdateColorPicker cmd)
+    UpdateFillPicker msg ->
+      let
+        (fillPicker, cmd) = (ColorPicker.update msg model.fillPicker)
+      in
+        ({ model | fillPicker = fillPicker }, Cmd.map UpdateFillPicker cmd)
     UpdateToolbarHandle msg ->
       let
         (handle, cmd) = (ToolbarHandle.update msg model.handle)
@@ -92,6 +103,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch [
     Sub.map UpdateColorPicker (ColorPicker.subscriptions model.colorPicker),
+    Sub.map UpdateFillPicker (ColorPicker.subscriptions model.fillPicker),
     Sub.map UpdateToolbarHandle (ToolbarHandle.subscriptions model.handle),
     Sub.map UpdateToolPicker (ToolPicker.subscriptions model.toolPicker)
   ]
@@ -120,6 +132,7 @@ viewBody model =
   if (ToolbarHandle.isOpen model.handle) then
     [
       App.map UpdateColorPicker (ColorPicker.view model.colorPicker),
+      App.map UpdateFillPicker (ColorPicker.view model.fillPicker),
       App.map UpdateToolPicker (ToolPicker.view model.toolPicker)
     ]
   else
@@ -134,6 +147,10 @@ viewBody model =
 getCurrentColor : Model -> Color
 getCurrentColor model =
   ColorPicker.getCurrentColor model.colorPicker
+
+getCurrentFill : Model -> Color
+getCurrentFill model =
+  ColorPicker.getCurrentColor model.fillPicker
 
 getCurrentTool : Model -> Tool
 getCurrentTool model =
