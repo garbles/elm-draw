@@ -77,29 +77,28 @@ subscriptions model =
 
 -- VIEW
 
+wrapperStyle = style [
+    ("position", "relative"),
+    ("width", "100%"),
+    ("height", "20px"),
+    ("background-color", "#ccc")
+  ]
+
+toggleStyle = style [
+    ("position", "absolute"),
+    ("right", "0"),
+    ("top", "0"),
+    ("width", "20px"),
+    ("height", "20px")
+  ]
+
 
 view : Model -> Html Msg
 view model =
-  let
-    wrapperStyle = style [
-      ("position", "relative"),
-      ("width", "100%"),
-      ("height", "20px"),
-      ("background-color", "#ccc")
-    ]
-
-    toggleStyle = style [
-      ("position", "absolute"),
-      ("right", "0"),
-      ("top", "0"),
-      ("width", "20px"),
-      ("height", "20px")
-    ]
-  in
-    div [] [
-      div [ wrapperStyle, onMouseDown ] [],
-      div [ toggleStyle, onClick ToggleOpen ] [ text (if model.isOpen then "X" else "O") ]
-    ]
+  div [] [
+    div [ wrapperStyle, onMouseDown ] [],
+    div [ toggleStyle, onClick ToggleOpen ] [ text (if model.isOpen then "X" else "O") ]
+  ]
 
 
 -- UTILS

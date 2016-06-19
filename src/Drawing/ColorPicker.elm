@@ -14,7 +14,7 @@ import Html.Events exposing (..)
 import Color exposing (Color)
 
 
-import ColorUtils exposing (hexToColor, colorToHex)
+import Utils.Color exposing (hexToColor, colorToHex)
 
 
 -- MODEL
@@ -58,6 +58,16 @@ subscriptions model = Sub.none
 -- VIEW
 
 
+inputStyle = style [
+    ("border", "none"),
+    ("width", "20px"),
+    ("background", "transparent"),
+    ("padding", "0"),
+    ("margin", "0"),
+    ("outline", "none")
+  ]
+
+
 view : Model -> Html Msg
 view model =
   div [] [viewColor model.color]
@@ -65,17 +75,7 @@ view model =
 
 viewColor : Color -> Html Msg
 viewColor color =
-  let
-    inputStyle = style [
-        ("border", "none"),
-        ("width", "20px"),
-        ("background", "transparent"),
-        ("padding", "0"),
-        ("margin", "0"),
-        ("outline", "none")
-      ]
-  in
-    input [ type' "color", inputStyle, value (colorToHex color), onChangeColor ] []
+  input [ type' "color", inputStyle, value (colorToHex color), onChangeColor ] []
 
 
 -- UTILS

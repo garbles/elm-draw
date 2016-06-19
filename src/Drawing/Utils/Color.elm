@@ -1,4 +1,4 @@
-module ColorUtils exposing
+module Utils.Color exposing
   ( hexToColor
   , colorToHex
   )
