@@ -5,9 +5,9 @@ module Canvas exposing
   , update
   , subscriptions
   , view
-  , setCurrentColor
-  , setCurrentFill
-  , setCurrentTool
+  , setColor
+  , setFill
+  , setTool
   , setSize
   )
 
@@ -32,9 +32,9 @@ import Tool exposing (Tool)
 type alias Model =
   { isDragging : Bool
   , paths : List Path
-  , currentTool : Tool
-  , currentColor : Color
-  , currentFill : Color
+  , tool : Tool
+  , color : Color
+  , fill : Color
   , size : Window.Size
   }
 
@@ -65,10 +65,8 @@ update msg model =
   case msg of
     DragStart position ->
       let
+        { color, fill, tool } = model
         point = toPoint model.size position
-        color = model.currentColor
-        fill = model.currentFill
-        tool = model.currentTool
         path = Tool.newPath tool point color fill
         paths = [path] ++ model.paths
       in
@@ -122,16 +120,16 @@ onMouseDown =
     on "mousedown" (Decode.map DragStart Mouse.position)
 
 
-setCurrentColor : Color -> Model -> Model
-setCurrentColor color model = { model | currentColor = color }
+setColor : Color -> Model -> Model
+setColor color model = { model | color = color }
 
 
-setCurrentFill : Color -> Model -> Model
-setCurrentFill color model = { model | currentFill = color }
+setFill : Color -> Model -> Model
+setFill color model = { model | fill = color }
 
 
-setCurrentTool : Tool -> Model -> Model
-setCurrentTool tool model = { model | currentTool = tool }
+setTool : Tool -> Model -> Model
+setTool tool model = { model | tool = tool }
 
 
 setSize : Model -> Window.Size -> Model

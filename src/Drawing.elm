@@ -87,9 +87,9 @@ update msg model =
       let
         (toolbar, cmd) = Toolbar.update msg model.toolbar
         canvas = model.canvas
-          |> Canvas.setCurrentColor (Toolbar.getCurrentColor toolbar)
-          |> Canvas.setCurrentFill (Toolbar.getCurrentFill toolbar)
-          |> Canvas.setCurrentTool (Toolbar.getCurrentTool toolbar)
+          |> Canvas.setColor (Toolbar.getColor toolbar)
+          |> Canvas.setFill (Toolbar.getFill toolbar)
+          |> Canvas.setTool (Toolbar.getTool toolbar)
       in
         ({ model | toolbar = toolbar, canvas = canvas }, Cmd.map UpdateToolbar cmd)
     GetWindowSize size ->

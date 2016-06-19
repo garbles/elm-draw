@@ -5,9 +5,9 @@ module Toolbar exposing
   , update
   , subscriptions
   , view
-  , getCurrentColor
-  , getCurrentFill
-  , getCurrentTool
+  , getColor
+  , getFill
+  , getTool
   )
 
 
@@ -144,14 +144,14 @@ viewBody model =
 -- UTILS
 
 
-getCurrentColor : Model -> Color
-getCurrentColor model =
-  ColorPicker.getCurrentColor model.colorPicker
+getColor : Model -> Color
+getColor model =
+  ColorPicker.getColor model.colorPicker
 
-getCurrentFill : Model -> Color
-getCurrentFill model =
-  ColorPicker.getCurrentColor model.fillPicker
+getFill : Model -> Color
+getFill model =
+  ColorPicker.getColor model.fillPicker
 
-getCurrentTool : Model -> Tool
-getCurrentTool model =
-  ToolPicker.getCurrentTool model.toolPicker
+getTool : Model -> Tool
+getTool model =
+  ToolPicker.getTool model.toolPicker

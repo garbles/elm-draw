@@ -5,7 +5,7 @@ module ToolPicker exposing
   , update
   , subscriptions
   , view
-  , getCurrentTool
+  , getTool
   )
 
 import Html exposing (..)
@@ -18,7 +18,7 @@ import Tool exposing (Tool)
 
 
 type alias Model =
-  { currentTool : Tool
+  { tool : Tool
   , tools: List Tool
   }
 
@@ -41,7 +41,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     SetTool tool ->
-      ({ model | currentTool = tool }, Cmd.none)
+      ({ model | tool = tool }, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -66,5 +66,5 @@ viewTool tool =
 -- UTILS
 
 
-getCurrentTool : Model -> Tool
-getCurrentTool = .currentTool
+getTool : Model -> Tool
+getTool = .tool

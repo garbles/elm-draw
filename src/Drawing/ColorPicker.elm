@@ -5,7 +5,7 @@ module ColorPicker exposing
   , update
   , subscriptions
   , view
-  , getCurrentColor
+  , getColor
   )
 
 import Html exposing (..)
@@ -80,5 +80,5 @@ onChangeColor : Attribute Msg
 onChangeColor = onInput (hexToColor >> SetColor)
 
 
-getCurrentColor : Model -> Color
-getCurrentColor = .color
+getColor : Model -> Color
+getColor = .color
